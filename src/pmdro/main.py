@@ -7,5 +7,6 @@ def cli():
 
 
 @cli.command("start")
-def start():
-    click.echo("Starting timer")
+@click.option("-f", "--focus", type=click.INT)
+def start(focus):
+    click.echo(f"Setting timer for {focus} minutes.")
