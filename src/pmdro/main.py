@@ -11,15 +11,17 @@ def cli():
     "-f",
     "--focus",
     "focus_duration",
-    type=click.INT,
+    type=click.IntRange(1),
     help="Focus timer duration in minutes",
+    default=25,
 )
 @click.option(
     "-b",
     "--break",
     "break_duration",
-    type=click.INT,
+    type=click.IntRange(1),
     help="Break timer duration in minutes",
+    default=5,
 )
 def start(focus_duration, break_duration):
     click.echo("You ran 'pmdro start'.")
