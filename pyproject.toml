@@ -12,7 +12,8 @@ dependencies = [
 ]
 
 [project.scripts]
-pmdro = "pmdro:main"
+# pmdro = "pmdro:main"
+pmdro = "pmdro.main:cli"
 
 [build-system]
 requires = ["uv_build>=0.8.5,<0.9.0"]
