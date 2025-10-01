@@ -41,6 +41,7 @@ class TimerState:
 
 def load_state():
     """Load timer state from file"""
+    # TODO: implement happy path.
     if STATE_PATH.exists():
         try:
             with open(STATE_PATH, "r") as f:
@@ -54,3 +55,27 @@ def save_state(state: TimerState):
     """Save timer state to file"""
     with open(STATE_PATH, "w") as f:
         json.dump(state.to_dict(), f, indent=2)
+
+
+def load_pid():
+    """Load background process id from file"""
+    if not PID_PATH.exists():
+        return None
+
+    try:
+        with open(PID_PATH, "r") as f:
+            return int(f.read().strip())
+    except (ValueError, IOError):
+        # TODO: set up logging or return error.
+        return None
+
+
+def save_pid(pid: int):
+    """Save background process id to file"""
+    with open(PID_PATH, "w") as f:
+        f.write(str(pid))
+
+
+def clear_pid():
+    """Remove PID file"""
+    PID_PATH.unlink(missing_ok=True)

@@ -4,7 +4,14 @@ import time
 
 # from dataclasses import dataclass, field
 # from typing import Optional
-from pmdro.state import TimerState, load_state, save_state
+from pmdro.state import (
+    TimerState,
+    load_state,
+    save_state,
+    load_pid,
+    save_pid,
+    clear_pid,
+)
 
 
 @click.group()
@@ -40,6 +47,13 @@ def start(focus_duration, break_duration):
     print(f"Updated timer state class: {state}")
 
     save_state(state)
+
+    clear_pid()
+    pid = load_pid()
+    print(f"Current PID: {pid}\nShould be 'None'.")
+
+    save_pid(4)
+    print("Look at '~/.config/pmdro/pmdro_pid' to see if value is 4.")
 
     if focus_duration is not None:
         click.echo(f"Setting focus timer for {focus_duration} minutes.")
