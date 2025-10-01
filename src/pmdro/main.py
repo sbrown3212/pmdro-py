@@ -2,6 +2,10 @@ import click
 import threading
 import time
 
+# from dataclasses import dataclass, field
+# from typing import Optional
+from pmdro.state import TimerState
+
 
 @click.group()
 def cli():
@@ -27,14 +31,22 @@ def cli():
 )
 # @click.option("-s", "--split") # combines focus and break timer (syntax might look like 25/5)
 def start(focus_duration, break_duration):
-    focus_seconds = focus_duration * 60
+    # focus_seconds = focus_duration * 60
+
+    state = TimerState()
+    print(f"Timer state class: {state}")
+
     if focus_duration is not None:
         click.echo(f"Setting focus timer for {focus_duration} minutes.")
 
-    with click.progressbar(range(focus_seconds)) as bar:
-        for _ in bar:
-            time.sleep(1)
+    # now = time.time()
+    # print(f"Current time: {now}")
+    # print(f"Data type of current time: {type(now)}")
 
+    # with click.progressbar(range(focus_seconds)) as bar:
+    #     for _ in bar:
+    #         time.sleep(1)
+    #
     if break_duration is not None:
         click.echo(f"Setting break timer for {break_duration} minutes.")
 
