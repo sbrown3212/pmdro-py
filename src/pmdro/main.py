@@ -11,6 +11,7 @@ from pmdro.state import (
     load_pid,
     save_pid,
     clear_pid,
+    is_process_running,
 )
 
 
@@ -54,6 +55,10 @@ def start(focus_duration, break_duration):
 
     save_pid(4)
     print("Look at '~/.config/pmdro/pmdro_pid' to see if value is 4.")
+
+    pid = 98276
+    pid_is_running = is_process_running(pid)
+    print(f"\nProcess {pid} is running: {pid_is_running}")
 
     if focus_duration is not None:
         click.echo(f"Setting focus timer for {focus_duration} minutes.")

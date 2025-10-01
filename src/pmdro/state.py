@@ -1,4 +1,5 @@
 import json
+import os
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
@@ -41,14 +42,14 @@ class TimerState:
 
 def load_state():
     """Load timer state from file"""
-    # TODO: implement happy path.
-    if STATE_PATH.exists():
-        try:
-            with open(STATE_PATH, "r") as f:
-                return TimerState.from_dict(json.load(f))
-        except (json.JSONDecodeError, IOError):
-            return TimerState()
-    return TimerState()
+    if not STATE_PATH.exists():
+        return TimerState()
+
+    try:
+        with open(STATE_PATH, "r") as f:
+            return TimerState.from_dict(json.load(f))
+    except (json.JSONDecodeError, IOError):
+        return TimerState()
 
 
 def save_state(state: TimerState):
@@ -79,3 +80,17 @@ def save_pid(pid: int):
 def clear_pid():
     """Remove PID file"""
     PID_PATH.unlink(missing_ok=True)
+
+
+def is_process_running(pid: Optional[int]):
+    """Check if a process with a given PID is currently running."""
+    if pid is None:
+        return False
+
+    try:
+        os.kill(pid, 0)  # does not kill proccess when `signal` is `0`.
+        return True
+    except ProcessLookupError:
+        # TODO: set up logging or return error.
+        return False
+    # except PermissionError:
