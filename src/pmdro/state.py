@@ -1,3 +1,4 @@
+import json
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
@@ -36,3 +37,20 @@ class TimerState:
         state.start_time = data.get("start_time", None)
         state.pause_time = data.get("pause_time", None)
         return state
+
+
+def load_state():
+    """Load timer state from file"""
+    if STATE_PATH.exists():
+        try:
+            with open(STATE_PATH, "r") as f:
+                return TimerState.from_dict(json.load(f))
+        except (json.JSONDecodeError, IOError):
+            return TimerState()
+    return TimerState()
+
+
+def save_state(state: TimerState):
+    """Save timer state to file"""
+    with open(STATE_PATH, "w") as f:
+        json.dump(state.to_dict(), f, indent=2)
