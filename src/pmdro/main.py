@@ -1,18 +1,17 @@
 import click
-import threading
+
+# import threading
 import time
 
-# from dataclasses import dataclass, field
-# from typing import Optional
-from pmdro.state import (
-    TimerState,
-    load_state,
-    save_state,
-    load_pid,
-    save_pid,
-    clear_pid,
-    is_process_running,
-)
+# from pmdro.state import (
+#     TimerState,
+#     load_state,
+#     save_state,
+#     # load_pid,
+#     # save_pid,
+#     # clear_pid,
+#     # is_process_running,
+# )
 
 
 FOCUS_DEFAULT_DURATION = 25
@@ -33,7 +32,6 @@ def cli():
     help="Include focus timer. Requires integer argument to specify timer duration (in minutes).",
     default=None,
     is_flag=False,
-    # flag_value=25,
 )
 @click.option(
     "-b",
@@ -43,7 +41,6 @@ def cli():
     help="Include break timer. Requires integer argument to specify timer duration (in minutes).",
     default=None,
     is_flag=False,
-    # flag_value=5,
 )
 @click.option(
     "-a",
@@ -54,7 +51,6 @@ def cli():
     help="Auto start break timer once focus timer is completed.",
     is_flag=True,
 )
-# @click.option("-s", "--split") # combines focus and break timer (syntax might look like 25/5)
 def start(focus_duration, break_duration, auto_break):
     """
     Start new timer session
@@ -68,38 +64,82 @@ def start(focus_duration, break_duration, auto_break):
     # 'pmdro start -b 15' should run a session with only a 15 min break timer.
     # 'pmdro start -f 50 -b 10' should run a session with a 50 min focus timer and 10 min break timer.
 
-    # Should there be a '-a' flag to auto start the break timer after the focus timer completes?
+    def run_timer(duration_seconds: int):
+        running = True
+        end_time = time.time() + duration_seconds
 
-    click.echo(f"Focus duration: {focus_duration}")
-    click.echo(f"Break duration: {break_duration}")
-    click.echo("\nStarting new session...")
+        while running:
+            current_time = time.time()
+            remaining_time = end_time - current_time
 
+            if remaining_time <= 0:
+                running = False
+                continue
+
+            mins, secs = divmod(int(remaining_time), 60)
+            click.echo(f"\rTime remaining: {mins:02d}:{secs:02d}", nl=False)
+
+            time.sleep(0.5)
+
+        click.echo("\nTimer completed!")
+
+    # For debugging
+    # click.echo(f"Focus duration: {focus_duration}")
+    # click.echo(f"Break duration: {break_duration}")
+
+    click.echo("\nStarting new pmdro session...")
+
+    # Not currently using processes
+    # # Check if process is already running.
+    # pid = load_pid()
+    # if is_process_running(pid):
+    #     click.echo(
+    #         "A session is already running. Stop it first with the 'stop' command."
+    #     )
+    #     return
+
+    # Calculate duration in seconds
     if focus_duration is None and break_duration is None:
+        # If no arguments are provided, session runs with focus and break timer.
         focus_duration = FOCUS_DEFAULT_DURATION
         break_duration = BREAK_DEFAULT_DURATION
+    # TODO: uncomment following two lines after testing is done.
+    # focus_seconds = focus_duration * 60 if focus_duration is not None else 0
+    # break_seconds = break_duration * 60 if break_duration is not None else 0
+
+    # Use arguments as seconds rather than minutes to speed up testing.
+    focus_seconds = focus_duration if focus_duration is not None else 0
+    break_seconds = break_duration if break_duration is not None else 0
+
+    # Not currently using state (not using threads)
+    # # Initialize state
+    # state = TimerState()
+    # # TODO: set timer state for conditions below.
 
     if focus_duration is not None:
         click.echo(f"Starting {focus_duration} minute focus timer.")
+        run_timer(focus_seconds)
 
     if break_duration is not None:
         if focus_duration is not None:
+            # Handle break timer after focus timer completes.
             if auto_break:
-                click.echo("Focus timer complete! Auto starting break timer...")
+                click.echo("\nAuto starting break timer...")
                 click.echo(f"Starting {break_duration} minute break timer.")
+                run_timer(break_seconds)
             else:
                 if click.confirm(
-                    f"Focus timer complete! Start {break_duration} minute break?",
+                    f"\nStart {break_duration} minute break?",
                     default=True,
                 ):
                     click.echo(f"Starting {break_duration} minute break timer.")
+                    run_timer(break_seconds)
+                else:
+                    return
         else:
+            # No focus timer, only break timer.
             click.echo(f"Starting {break_duration} minute break timer.")
-
-        click.echo("Break timer complete!")
-    else:
-        click.echo("Focus timer complete!")
-
-    # focus_seconds = focus_duration * 60
+            run_timer(break_seconds)
 
     # # App state load and save testing
     # state = load_state()
