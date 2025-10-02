@@ -43,6 +43,10 @@ class TimerState:
         return state
 
 
+# ************************* State functions *************************
+# Use with thread implementation (to allow commands while timer is running).
+
+
 def load_state():
     """Load timer state from file"""
     if not STATE_PATH.exists():
@@ -59,6 +63,10 @@ def save_state(state: TimerState):
     """Save timer state to file"""
     with open(STATE_PATH, "w") as f:
         json.dump(state.to_dict(), f, indent=2)
+
+
+# ************************* Process ID functions *************************
+# Use with background process implementation
 
 
 def load_pid():
