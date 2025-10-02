@@ -1,5 +1,8 @@
 import json
 import os
+import signal
+import sys
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
@@ -83,7 +86,7 @@ def clear_pid():
 
 
 def is_process_running(pid: Optional[int]):
-    """Check if a process with a given PID is currently running."""
+    """Check if a process with a given PID is currently running"""
     if pid is None:
         return False
 
@@ -94,3 +97,40 @@ def is_process_running(pid: Optional[int]):
         # TODO: set up logging or return error.
         return False
     # except PermissionError:
+
+
+def timer_bg_process():
+    """Background proccess that handles countdown timer"""
+    # TODO: implement drift correction.
+
+    def signal_handler(sig, frame):
+        """Handle shutdown signals gracefully"""
+        clear_pid()
+        sys.exit(0)
+
+    signal.signal(signal.SIGTERM, signal_handler)
+    signal.signal(signal.SIGINT, signal_handler)
+
+    while True:
+        state = load_state()
+
+        if not state.running:
+            clear_pid()
+            break
+
+        if state.paused:
+            time.sleep(0.1)
+            continue
+
+        if state.remaining_seconds <= 0:
+            state.running = False
+            state.remaining_seconds = 0
+            save_state(state)
+            clear_pid()
+
+            print("Timer finished!!!")
+            break
+
+        state.remaining_seconds -= 1
+        save_state(state)
+        time.sleep(1)
