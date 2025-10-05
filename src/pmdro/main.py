@@ -1,7 +1,9 @@
 import click
+import os
+import subprocess
+import time
 
 # import threading
-import time
 
 # from pmdro.state import (
 #     TimerState,
@@ -64,6 +66,22 @@ def start(focus_duration, break_duration, auto_break):
     # 'pmdro start -b 15' should run a session with only a 15 min break timer.
     # 'pmdro start -f 50 -b 10' should run a session with a 50 min focus timer and 10 min break timer.
 
+    CMD = """
+    on run argv
+        display notification (item 2 of argv) with title (item 1 of argv)
+    end run
+    """
+
+    # def notify(title, text):
+    #     subprocess.call(["osascript", "-e", CMD, title, text])
+
+    def notify(title, text):
+        os.system(
+            """
+                  osascript -e 'display notification "{}" with title "{}"'
+                  """.format(text, title)
+        )
+
     def run_timer(duration_seconds: int):
         running = True
         end_time = time.time() + duration_seconds
@@ -82,6 +100,7 @@ def start(focus_duration, break_duration, auto_break):
             time.sleep(0.5)
 
         click.echo("\nTimer completed!")
+        notify("Title test", "Text test")
 
     # For debugging
     # click.echo(f"Focus duration: {focus_duration}")
