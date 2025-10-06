@@ -75,47 +75,52 @@ def start(focus_duration, break_duration, auto_break):
     # def notify(title, text):
     #     subprocess.call(["osascript", "-e", CMD, title, text])
 
-    def notify(title, text):
-        os.system(
-            """
-                  osascript -e 'display notification "{}" with title "{}"'
-                  """.format(text, title)
-        )
+    # def notify(title, text):
+    #     os.system(
+    #         """
+    #               osascript -e 'display notification "{}" with title "{}"'
+    #               """.format(text, title)
+    #     )
 
     def run_timer(duration_seconds: int):
-        running = True
-        end_time = time.time() + duration_seconds
+        start_time = time.time()
 
-        while running:
-            current_time = time.time()
-            remaining_time = end_time - current_time
+        # mins = duration_seconds // 60
+        # secs = duration_seconds % 60
+        mins, secs = divmod(duration_seconds, 60)
+        initial_template = f"%(label)s [%(bar)s] %(info)s- {mins:02d}:{secs:02d}"
 
-            if remaining_time <= 0:
-                running = False
-                continue
+        with click.progressbar(
+            length=duration_seconds,
+            show_eta=False,
+            show_percent=False,
+            bar_template=initial_template,
+        ) as bar:
+            last_update = 0
 
-            mins, secs = divmod(int(remaining_time), 60)
-            click.echo(f"\rTime remaining: {mins:02d}:{secs:02d}", nl=False)
+            while True:
+                current_time = time.time()
+                elapsed = int(current_time - start_time)
+                remaining = max(0, duration_seconds - elapsed)
 
-            time.sleep(0.5)
+                # mins = remaining // 60
+                # secs = remaining % 60
+                mins, secs = divmod(remaining, 60)
+                bar.bar_template = (
+                    f"%(label)s [%(bar)s] %(info)s- {mins:02d}:{secs:02d}"
+                )
 
-        click.echo("\nTimer completed!")
-        notify("Title test", "Text test")
+                if elapsed > last_update:
+                    bar.update(elapsed - last_update)
+                    last_update = elapsed
 
-    # For debugging
-    # click.echo(f"Focus duration: {focus_duration}")
-    # click.echo(f"Break duration: {break_duration}")
+                if remaining <= 0:
+                    bar.update(duration_seconds - last_update)
+                    break
 
-    click.echo("\nStarting new pmdro session...")
+                time.sleep(0.1)
 
-    # Not currently using processes
-    # # Check if process is already running.
-    # pid = load_pid()
-    # if is_process_running(pid):
-    #     click.echo(
-    #         "A session is already running. Stop it first with the 'stop' command."
-    #     )
-    #     return
+            click.echo("\nTimer complete.")
 
     # Calculate duration in seconds
     if focus_duration is None and break_duration is None:
