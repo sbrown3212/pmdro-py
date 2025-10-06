@@ -66,11 +66,11 @@ def start(focus_duration, break_duration, auto_break):
     # 'pmdro start -b 15' should run a session with only a 15 min break timer.
     # 'pmdro start -f 50 -b 10' should run a session with a 50 min focus timer and 10 min break timer.
 
-    CMD = """
-    on run argv
-        display notification (item 2 of argv) with title (item 1 of argv)
-    end run
-    """
+    # CMD = """
+    # on run argv
+    #     display notification (item 2 of argv) with title (item 1 of argv)
+    # end run
+    # """
 
     # def notify(title, text):
     #     subprocess.call(["osascript", "-e", CMD, title, text])
@@ -85,8 +85,6 @@ def start(focus_duration, break_duration, auto_break):
     def run_timer(duration_seconds: int):
         start_time = time.time()
 
-        # mins = duration_seconds // 60
-        # secs = duration_seconds % 60
         mins, secs = divmod(duration_seconds, 60)
         initial_template = f"%(label)s [%(bar)s] %(info)s- {mins:02d}:{secs:02d}"
 
@@ -103,11 +101,9 @@ def start(focus_duration, break_duration, auto_break):
                 elapsed = int(current_time - start_time)
                 remaining = max(0, duration_seconds - elapsed)
 
-                # mins = remaining // 60
-                # secs = remaining % 60
                 mins, secs = divmod(remaining, 60)
                 bar.bar_template = (
-                    f"%(label)s [%(bar)s] %(info)s- {mins:02d}:{secs:02d}"
+                    f"%(label)s [%(bar)s] %(info)s- Remaining: {mins:02d}:{secs:02d}"
                 )
 
                 if elapsed > last_update:
@@ -139,6 +135,8 @@ def start(focus_duration, break_duration, auto_break):
     # # Initialize state
     # state = TimerState()
     # # TODO: set timer state for conditions below.
+
+    click.echo("Starting new pmdro session.\n")
 
     if focus_duration is not None:
         click.echo(f"Starting {focus_duration} minute focus timer.")
