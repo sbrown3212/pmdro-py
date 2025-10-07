@@ -1,6 +1,6 @@
 # PMDRO - CLI Pomodoro Timer
 
-A simple pomodoro timer command line application written in Python.
+A simple pomodoro timer command line application written in Python. Intended for MacOS.
 
 ## Features
 
@@ -30,10 +30,20 @@ cd pmdro-py
 uv run pmdro start
 ```
 
-### 2b. Install it locally (optional)
+### 2b. Install it locally to use in a virtual environment (optional)
+
+To install pmdro to be used within the project's virtual environment (and not need to include `uv run` before commands):
 
 ```
-uv pip install -e
+uv pip install --editable
+```
+
+### 2c. Install it locally to use globally (optional)
+
+To install pmdro on your own machine to be able run it from any directory:
+
+```
+uv tool install --editable
 ```
 
 ## Usage
@@ -130,14 +140,14 @@ pmdro start -f 50 -b 10 -a
 <!-- ``` -->
 <!---->
 <!-- ### Running Tests -->
-```
-```
 
 ## Contributing
 
-This is a personal project for a backend development course, but suggestions and feedback are welcome. Feel free to open an issue if you find a bug or have ideas for improvement.
+This is a personal project for [Boot.dev](https://boot.dev) (an awesome backend development course), but suggestions and feedback are welcome. Feel free to open an issue if you find a bug or have ideas for improvement.
 
-<!-- ## License -->
+## License
+
+[MIT License](LICENSE) - feel free to use this project for learning purposes.
 
 ## Acknowledgments
 
