@@ -14,7 +14,7 @@ A simple pomodoro timer command line application written in Python.
 
 ### Prerequisites
 
-- Python 3.8 or higher
+- Python 3.10 or higher
 - [uv](https://github.com/astral-sh/uv)
 
 ### 1. Download repo
