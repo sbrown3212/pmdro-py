@@ -1,8 +1,8 @@
 import click
-import os
-import subprocess
 import time
 
+# import os
+# import subprocess
 # import threading
 
 # from pmdro.state import (
@@ -86,7 +86,9 @@ def start(focus_duration, break_duration, auto_break):
         start_time = time.time()
 
         mins, secs = divmod(duration_seconds, 60)
-        initial_template = f"%(label)s [%(bar)s] %(info)s- {mins:02d}:{secs:02d}"
+        initial_template = (
+            f"%(label)s [%(bar)s] %(info)s- Remaining: {mins:02d}:{secs:02d}"
+        )
 
         with click.progressbar(
             length=duration_seconds,
@@ -123,13 +125,13 @@ def start(focus_duration, break_duration, auto_break):
         # If no arguments are provided, session runs with focus and break timer.
         focus_duration = FOCUS_DEFAULT_DURATION
         break_duration = BREAK_DEFAULT_DURATION
-    # TODO: uncomment following two lines after testing is done.
-    # focus_seconds = focus_duration * 60 if focus_duration is not None else 0
-    # break_seconds = break_duration * 60 if break_duration is not None else 0
+    # Use arguments as minutes. (comment out for testing)
+    focus_seconds = focus_duration * 60 if focus_duration is not None else 0
+    break_seconds = break_duration * 60 if break_duration is not None else 0
 
-    # Use arguments as seconds rather than minutes to speed up testing.
-    focus_seconds = focus_duration if focus_duration is not None else 0
-    break_seconds = break_duration if break_duration is not None else 0
+    # # Use arguments as seconds. (uncomment for testing)
+    # focus_seconds = focus_duration if focus_duration is not None else 0
+    # break_seconds = break_duration if break_duration is not None else 0
 
     # Not currently using state (not using threads)
     # # Initialize state
